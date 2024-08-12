@@ -9,12 +9,12 @@ async function bootstrap() {
     {
       transport: Transport.TCP,
       options: {
-        port: 3000,
+        port: +process.env.PORT,
       },
     },
   );
 
   await app.listen();
-  Logger.log('Running on port ==> 3000');
+  Logger.log(`Running on the port => ${process.env.PORT}`);
 }
 bootstrap();
