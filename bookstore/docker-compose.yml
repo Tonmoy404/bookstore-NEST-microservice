@@ -4,6 +4,8 @@ services:
   mysql:
     image: mysql:latest
     container_name: mysql-db
+    env_file:
+      - .env
     environment:
       MYSQL_ROOT_PASSWORD: root_password # Change this to a strong password
 
