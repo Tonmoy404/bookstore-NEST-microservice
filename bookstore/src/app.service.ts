@@ -3,12 +3,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateBookDto } from './dto/create-book.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from './entities/book.entity';
 import { Repository } from 'typeorm';
-
-let Bookstore: CreateBookDto[] = [];
+import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 
 @Injectable()
 export class AppService {
@@ -25,7 +24,7 @@ export class AppService {
     return book;
   }
 
-  async newBook(book: Book) {
+  async newBook(book: CreateBookDto) {
     const exists = await this.bookRepo.findOne({
       where: {
         name: book.name,
@@ -41,8 +40,31 @@ export class AppService {
     const newBook = this.bookRepo.create(book);
     const result = await this.bookRepo.save(newBook);
 
-    // return `${result.id}\n${result.name}`;
-    return result.name;
+    return `Added New Book -> ${result.name}`;
+    // return result.name;
+  }
+
+  async deleteBook(id: number) {
+    const book = await this.bookRepo.findOne({ where: { id } });
+    if (!book) {
+      throw new BadRequestException('Book Does Not Exist');
+    }
+
+    await this.bookRepo.remove(book);
+
+    return `Successfully Deleted Book -> ${book.name}`;
+  }
+
+  async updateBook(id: number, book: UpdateBookDto) {
+    const bookToUpdate = await this.bookRepo.findOne({ where: { id } });
+    if (!bookToUpdate) {
+      throw new NotFoundException('Book Not Found');
+    }
+
+    Object.assign(bookToUpdate, book);
+    await this.bookRepo.save(bookToUpdate);
+
+    return `updated book -> ${book.name}`;
   }
 
   async getAllBooks() {
