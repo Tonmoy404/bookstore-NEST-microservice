@@ -6,7 +6,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { MessagePattern } from '@nestjs/microservices';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -16,7 +15,6 @@ export class UserService {
     @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {}
 
-  @MessagePattern({ cmd: 'create_user' })
   async createUser(user: CreateUserDto) {
     try {
       const exists = await this.userRepo.findOne({
@@ -38,7 +36,6 @@ export class UserService {
     }
   }
 
-  @MessagePattern({ cmd: 'get_user' })
   async getUserById(id: number) {
     try {
       const user = await this.userRepo.findOne({ where: { id } });
@@ -52,7 +49,6 @@ export class UserService {
     }
   }
 
-  @MessagePattern({ cmd: 'get_users' })
   async getAllUsers() {
     try {
       const users = await this.userRepo.find();
@@ -66,7 +62,6 @@ export class UserService {
     }
   }
 
-  @MessagePattern({ cmd: 'update_user' })
   async updateUser(id: number, user: UpdateUserDto) {
     try {
       const userToUpdate = await this.userRepo.findOne({ where: { id } });
@@ -81,7 +76,6 @@ export class UserService {
     }
   }
 
-  @MessagePattern({ cmd: 'delete_user' })
   async deleteUser(id: number) {
     try {
       const user = await this.userRepo.find({ where: { id } });
