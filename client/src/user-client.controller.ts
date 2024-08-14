@@ -41,4 +41,9 @@ export class UserController {
   deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.userClient.send({ cmd: 'delete_user' }, id);
   }
+
+  @Post('login')
+  loginUser(@Body() user: any) {
+    return this.userClient.send({ cmd: 'login_user' }, user);
+  }
 }
