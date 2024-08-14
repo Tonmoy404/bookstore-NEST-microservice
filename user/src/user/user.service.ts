@@ -1,7 +1,9 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
@@ -105,7 +107,16 @@ export class UserService {
     }
   }
 
-  getHello(): string {
-    return 'Hello World!';
+  async getUserByEmail(email: string) {
+    try {
+      const user = await this.userRepo.findOne({ where: { email } });
+      if (!user) {
+        throw new UnauthorizedException('User Does not exists');
+      }
+
+      return user;
+    } catch (err) {
+      throw new InternalServerErrorException('An Error occurred -> ', err);
+    }
   }
 }
