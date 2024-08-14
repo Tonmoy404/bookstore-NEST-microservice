@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { UserController } from './bookStore-client.controller';
+import { BookController } from './bookStore-client.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { UserController } from './user-client.controller';
 
 @Module({
   imports: [
@@ -10,7 +11,7 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices';
       isGlobal: true,
     }),
   ],
-  controllers: [UserController],
+  controllers: [BookController, UserController],
   providers: [
     {
       provide: 'BOOK_SERVICE',
@@ -33,7 +34,7 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices';
           transport: Transport.TCP,
           options: {
             host: configService.get('USER_SERVICE_HOST'),
-            port: configService.get('USE_SERVICE_PORT'),
+            port: configService.get('USER_SERVICE_PORT'),
           },
         });
       },

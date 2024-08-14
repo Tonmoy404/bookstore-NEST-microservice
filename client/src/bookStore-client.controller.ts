@@ -12,10 +12,9 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 
 @Controller('books')
-export class UserController {
+export class BookController {
   constructor(
     @Inject('BOOK_SERVICE') private readonly bookClient: ClientProxy,
-    @Inject('USER_SERVICE') private readonly userClient: ClientProxy,
   ) {}
 
   ////Book-Routes
@@ -43,12 +42,5 @@ export class UserController {
   @Delete()
   deleteBook(@Param('id', ParseIntPipe) id: number) {
     return this.bookClient.send({ cmd: 'delete_book' }, id);
-  }
-
-  ////User-Routes
-
-  @Post('/user')
-  createUser(@Body() user: any) {
-    return this.userClient.send({ cmd: 'create_user' }, user);
   }
 }

@@ -8,6 +8,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -15,11 +16,11 @@ export class UserService {
     @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {}
 
-  async createUser(user: CreateUserDto) {
+  async createUser(createUser: CreateUserDto) {
     try {
       const exists = await this.userRepo.findOne({
         where: {
-          email: user.email,
+          email: createUser.email,
         },
       });
 
@@ -27,13 +28,25 @@ export class UserService {
         throw new BadRequestException('User Already Exists');
       }
 
-      const newUser = this.userRepo.create(user);
+      const hashedPass = await this.hashPass(createUser.password);
+
+      const newUser = this.userRepo.create({
+        ...createUser,
+        password: hashedPass,
+      });
       const result = await this.userRepo.save(newUser);
 
       return `New User Created -> ${result.username}`;
     } catch (err) {
       console.log('An Error Occurred while creating user -> ', err);
     }
+  }
+
+  private async hashPass(password: string): Promise<string> {
+    const saltRounds = +process.env.SALT;
+    const salt = await bcrypt.genSalt(saltRounds);
+
+    return await bcrypt.hash(password, salt);
   }
 
   async getUserById(id: number) {
