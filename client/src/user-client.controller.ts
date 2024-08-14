@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ClientProxy, Payload } from '@nestjs/microservices';
 
 @Controller('users')
@@ -13,7 +23,22 @@ export class UserController {
   }
 
   @Get()
-  getUser(@Payload() id: number) {
+  getAllUsers() {
+    return this.userClient.send({ cmd: 'get_users' }, {});
+  }
+
+  @Get(':id')
+  getUser(@Param('id', ParseIntPipe) id: number) {
     return this.userClient.send({ cmd: 'get_user' }, id);
+  }
+
+  @Patch(':id')
+  updateUser(@Param('id', ParseIntPipe) id: number, @Body() user: any) {
+    return this.userClient.send({ cmd: 'update_user' }, { id, user });
+  }
+
+  @Delete(':id')
+  deleteUser(@Param('id', ParseIntPipe) id: number) {
+    return this.userClient.send({ cmd: 'delete_user' }, id);
   }
 }
