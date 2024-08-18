@@ -61,4 +61,10 @@ export class UserController {
       throw new BadRequestException('Invalid Credentials');
     }
   }
+
+  @Post('logout')
+  async logoutUser(@Res() response: Response) {
+    response.clearCookie('access_token');
+    return response.json({ message: 'Logout Successful' });
+  }
 }
