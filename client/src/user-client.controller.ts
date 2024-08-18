@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,8 +9,11 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Res,
 } from '@nestjs/common';
 import { ClientProxy, Payload } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
+import { Response } from 'express';
 
 @Controller('users')
 export class UserController {
@@ -43,7 +47,18 @@ export class UserController {
   }
 
   @Post('login')
-  loginUser(@Body() user: any) {
-    return this.userClient.send({ cmd: 'login_user' }, user);
+  async loginUser(@Body() user: any, @Res() response: Response) {
+    const result = await lastValueFrom(
+      this.userClient.send({ cmd: 'login_user' }, user),
+    );
+    if (result && result.access_token) {
+      response.cookie('access_token', result.access_token, {
+        httpOnly: true,
+        maxAge: 3600000,
+      });
+      return response.json({ message: 'Login Successful' });
+    } else {
+      throw new BadRequestException('Invalid Credentials');
+    }
   }
 }
