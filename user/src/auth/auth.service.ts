@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { LoginUserDto } from 'src/dto/login-user.dto';
+import { LoginUserDto } from 'src/user/dto/login-user.dto';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 
